@@ -24,6 +24,7 @@ zero_grad function:
 Useful resources:
     https://www.ics.uci.edu/~pjsadows/notes.pdf
     https://www.jasonosajima.com/backprop
+    https://www.gatsby.ucl.ac.uk/teaching/courses/sntn/sntn-2017/resources/Matrix_derivatives_cribsheet.pdf
 """
 
 
