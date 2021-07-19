@@ -19,7 +19,6 @@ from sklearn.datasets import load_iris
 
 # %% Argument parser
 
-# Question: What does this function do?
 def make_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--lr', type=float, default=1e-2,
@@ -43,16 +42,15 @@ if __name__ == '__main__':
     num_samples = feats.shape[0]
     num_classes = gt.max() + 1
 
-    # Create a new network instance
-    net = ...
+    net = ANN()
 
-    # Define your own layers and activation units    
-    net.operations = []
+    net.operations = [nn.linear(in_c=4, out_c=128),
+                      nn.sigmoid(),
+                      nn.linear(in_c=128, out_c=num_classes)]
 
     loss_func = nn.CrossEntropyLoss()
 
-    # Define an optimizer function
-    optimize = ...
+    optimize = optim.SGD(lr=args['lr'])
 
     samples = np.split(feats, num_samples, axis=0)
     targets = np.split(gt, num_samples, axis=0)
@@ -64,11 +62,8 @@ if __name__ == '__main__':
 
         for idx, sample in enumerate(samples):
 
-            # Explain why we transpose the input sample
-            out = net.forward(sample.T) 
-            
-            # Compute loss and the gradient using CrossEntropyLoss function
-            loss, loss_grad = ...
+            out = net.forward(sample.T)  # Read note above
+            loss, loss_grad = loss_func(out, targets[idx])
 
             loss_per_epoch += loss
 
@@ -79,12 +74,13 @@ if __name__ == '__main__':
 
         loss_per_epoch = loss_per_epoch/len(samples)
 
-        # Generate a confusion matrix based on performance
+        c_mat = confusion_matrix(gt, predict)
+        c_mat = c_mat.astype('float') / c_mat.sum(axis=1)[:, np.newaxis]
 
         # Generate gradients to update weights ...
+        net.backward()
 
         # Gradients have been generated, time to update weights!
+        optimize(net)
 
-        # Remove out accumulated gradients
-        
-    # Plot training performance
+        net.zero_grad()
